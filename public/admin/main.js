@@ -305,8 +305,7 @@ function makeEditor(el, value, height = "430px", editType = "wysiwyg") {
           form.append("image", blob, "image.png");
           const r = await api("/api/upload", "POST", form);
           if (disposedEditors.has(instance) || !el.isConnected) return;
-          callback(r.url, "图片");
-          siteEditorImages.continueAfterImage(instance);
+          siteEditorImages.insertImageAndContinue(instance, r.url, "图片", callback);
         } catch (e) {
           fail(e);
         }

@@ -6,12 +6,16 @@
   function continueAfterImage(editor) {
     // Both editor modes support inserting paragraph breaks without replacing the document.
     // Never reset the complete Markdown: that loses cursor/undo state and can discard pending edits.
-    editor.insertText("\n\n");
+    editor.insertText(editor.isMarkdownMode() ? "\n\n" : "\n");
     editor.focus();
   }
-  function insertImageAndContinue(editor, url, alt = "图片") {
+  function insertImageAndContinue(editor, url, alt = "图片", insertImage) {
     editor.focus();
-    editor.exec("addImage", { imageUrl: url, altText: alt });
+    // Images inserted from Markdown mode must begin a new block, including after
+    // a blank WYSIWYG paragraph serialized as raw HTML.
+    if (editor.isMarkdownMode()) editor.insertText("\n\n");
+    if (insertImage) insertImage(url, alt);
+    else editor.exec("addImage", { imageUrl: url, altText: alt });
     continueAfterImage(editor);
   }
   return { continueAfterImage, insertImageAndContinue };

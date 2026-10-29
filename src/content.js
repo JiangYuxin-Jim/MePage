@@ -12,8 +12,23 @@ const markdown = new Marked(markedHighlight({
     ? hljs.highlight(code, { language: lang }).value : hljs.highlightAuto(code).value,
 }));
 const anchor = s => s.toLowerCase().replace(/[^\w一-鿿]+/g, "-").replace(/^-|-$/g, "");
+function normalizeEditorMarkdown(text) {
+  // Empty WYSIWYG paragraphs can serialize as standalone <br> lines. CommonMark
+  // treats the following lines as raw HTML until a blank line, hiding Markdown images.
+  // Work on HTML tokens only so fenced/indented code and HTML containers stay intact.
+  return markdown.lexer(text || "").map(token => {
+    if (token.type === "html") {
+      const breaks = token.raw.match(/^(?:[ \t]{0,3}(?:<br[ \t]*\/?>[ \t]*)+(?:\r?\n|$))+/i);
+      if (breaks) {
+        const rest = token.raw.slice(breaks[0].length);
+        if (rest.trim()) return breaks[0] + "\n" + normalizeEditorMarkdown(rest);
+      }
+    }
+    return token.raw;
+  }).join("");
+}
 function renderMarkdown(text) {
-  return sanitize(markdown.parse(text || ""), {
+  return sanitize(markdown.parse(normalizeEditorMarkdown(text)), {
     allowedTags: sanitize.defaults.allowedTags.concat(["img", "h1", "h2"]),
     allowedAttributes: { ...sanitize.defaults.allowedAttributes, "*": ["class"], img: ["src", "alt", "title", "width", "height"] },
     allowedSchemes: ["http", "https", "mailto"], allowProtocolRelative: false,
@@ -39,7 +54,7 @@ function createContent(root, store, config) {
       const p = store.get("posts", safeSlug(slug));
       if (!p || (!includeDrafts && p.status !== "published")) return null;
       const {id, ...post} = p;
-      return {...post,slug:id};
+      return {...post,slug:id,content:normalizeEditorMarkdown(post.content)};
     },
     savePost(input, oldSlug) {
       if (!input || typeof input !== "object" || Array.isArray(input)) problem("文章格式错误");
@@ -59,7 +74,7 @@ function createContent(root, store, config) {
         const value = {
           title: input.title.trim(), date: input.date, category: input.category,
           tags: [...new Map(input.tags.map(t => t.trim()).filter(Boolean).map(t => [t.normalize("NFKC").toLowerCase(),t])).values()],
-          content: input.content, status: input.status,
+          content: normalizeEditorMarkdown(input.content), status: input.status,
         };
         if (oldSlug && oldSlug !== slug) store.remove("posts",oldSlug);
         store.put("posts",slug,value);
@@ -137,4 +152,4 @@ function createContent(root, store, config) {
   if (!store.meta("contentSeeded")) c.seedDemo();
   return c;
 }
-module.exports = {createContent,renderMarkdown,safeSlug};
+module.exports = {createContent,renderMarkdown,normalizeEditorMarkdown,safeSlug};
