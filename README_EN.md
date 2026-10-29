@@ -12,6 +12,7 @@ Use it for your profile, portfolio, blog and research. After deployment, you can
 
 *Screenshots use fictional demo content. Replace the profile, avatar and theme in the admin.*
 
+
 - Bilingual profile, research timeline and customizable accent color.
 - Visual blog editor with optional Markdown, image upload/paste/drag, drafts, publishing and categories.
 - Optional cat or dog companion using DeepSeek and your public knowledge base, with scope checks and visitor/IP/site quotas.
@@ -105,7 +106,8 @@ To reset demo content, stop the app and run `npm run seed:demo`. This replaces c
 
 ## AI conversations and limits
 
-![MePage AI request flow](assets/readme/ai-flow.webp)
+![MePage AI 问答示意](assets/readme/image.png)
+
 
 The model receives relevant public profile data, published knowledge, visible research records and published posts, along with up to three recent conversation turns. Visitors can ask follow-up questions about a project without repeating the owner's name. The model is instructed to clarify ambiguous references and acknowledge missing information without inventing details. Knowledge entries do not contain preset replies.
 
