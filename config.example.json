@@ -1,0 +1,27 @@
+{
+  "server": {
+    "port": 18731,
+    "adminPort": 18732,
+    "host": "0.0.0.0",
+    "adminHost": "127.0.0.1",
+    "publicUrl": "http://localhost:18731",
+    "adminUrl": "http://localhost:18732",
+    "trustProxy": false,
+    "trustedProxies": ["loopback", "172.30.81.1"]
+  },
+  "ai": {
+    "enabled": false,
+    "model": "deepseek-flash",
+    "timeoutSeconds": 20,
+    "maxOutputTokens": 400
+  },
+  "limits": {
+    "visitorDaily": 20,
+    "ipDaily": 30,
+    "siteDaily": 100,
+    "perMinute": 10,
+    "concurrent": 2,
+    "questionLength": 500,
+    "timezone": "Asia/Shanghai"
+  }
+}

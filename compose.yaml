@@ -1,0 +1,20 @@
+services:
+  website:
+    build: .
+    restart: unless-stopped
+    init: true
+    ports:
+      - "18731:18731"
+      - "18732:18732"
+    volumes:
+      - website-data:/data
+      - ./.env:/data/.env:ro
+      - ./config.json:/data/config.json:ro
+    environment:
+      NODE_ENV: production
+      SITE_ROOT: /data
+      HOST: 0.0.0.0
+      ADMIN_HOST: 0.0.0.0
+    stop_grace_period: 25s
+volumes:
+  website-data:

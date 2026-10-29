@@ -1,5 +1,5 @@
 <aside class="sidebar">
-  <a href="/" style="text-decoration:none;color:inherit;">
+  <a href="/" class="sidebar-profile" style="text-decoration:none;color:inherit;">
     <div class="sidebar-photo">
       <% if (site.avatar) { %>
         <img src="<%= site.avatar %>" alt="<%= site.name %>">
@@ -7,11 +7,11 @@
         <span class="sidebar-photo-placeholder"><%= site.initial %></span>
       <% } %>
     </div>
+    <div class="sidebar-identity">
     <div class="sidebar-name">
       <span class="zh"><%= site.name %></span>
       <span class="en"><%= site.nameEn %></span>
     </div>
-  </a>
   <div class="sidebar-title">
     <span class="zh"><%= site.title %></span>
     <span class="en"><%= site.titleEn %></span>
@@ -20,6 +20,9 @@
     <span class="zh"><%= site.school %></span>
     <span class="en"><%= site.schoolEn %></span>
   </div>
+
+    </div>
+  </a>
 
   <div class="sidebar-links-v">
     <% if (site.github && site.github !== 'yourusername') { %>

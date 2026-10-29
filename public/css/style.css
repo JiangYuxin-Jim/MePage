@@ -845,3 +845,7 @@ a:hover { color: var(--accent-hover); }
   .blog-list-entry { flex-direction: column; gap: 2px; }
   .blog-list-date { min-width: 0; }
 }
+
+/* A category is a single navigation group; tags are independent keywords. */
+.blog-list-category{display:inline-flex;align-items:center;padding:2px 8px;border-radius:4px;background:var(--accent-light);color:var(--accent);font-size:11px;font-weight:600}.blog-list-tag{background:transparent;border:1px solid var(--border-light);color:var(--text-light);font-weight:400}.article-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.blog-no-tags{font-size:11px;color:var(--text-light)}

@@ -1,308 +1,213 @@
-# Personal Academic Homepage & Blog
+# MePage
 
-> 📖 [English Version](README_EN.md) | 中文版
+**一个极简、易部署的个人网站，带 AI 助手，用来展示个人经历、作品集与博客。**
 
-一个轻量级的双语（中文/英文）个人学术主页和博客系统。基于 **Express + EJS + Markdown** 构建，无需数据库 —— 所有内容通过 Markdown 文件管理。
+装好 Node.js 24 LTS，下载项目，按下面的命令安装并启动，就能运行自己的个人网站。项目自带示例配置和演示内容，无需单独安装数据库，适合想搭建个人主页的学生、研究者和开发者。
 
-## ✨ 特性
+网站运行后，改简介、发文章、插图片和更新项目记录都在网页后台完成，日常维护不需要写代码。
 
-- 🌐 **双语支持** — 中/英文一键切换，所有内容均支持双语
-- 📝 **Markdown 写作** — 用 Markdown 写博客，支持语法高亮（highlight.js）
-- 🗂️ **零数据库** — 所有内容以 Markdown 文件存储，无需配置数据库
-- 🎨 **简约设计** — 极简学术风格，响应式布局，暗色代码块
-- ⚡ **轻量快速** — Express 服务端渲染，秒开页面
-- 🔧 **极易定制** — 只需编辑 `content/` 目录下的文件即可改变整个网站
-- 📱 **响应式** — 适配桌面、平板、手机
+[GitHub 仓库](https://github.com/JiangYuxin-Jim/MePage) · [English](README_EN.md)
 
-## 🚀 快速开始
+![MePage 个人主页预览](assets/readme/homepage.jpg)
 
-### 环境要求
+*截图使用虚构演示资料；姓名、头像、简介和主题色均可在后台替换。*
 
-- [Node.js](https://nodejs.org/) 18+
+## 能做什么
 
-### 安装运行
+| 功能 | 使用方式 |
+| --- | --- |
+| 个人主页 | 中英文介绍、头像、研究方向、联系方式和主题色，均可在网页修改 |
+| 博客 | 接近 Word 的可视化编辑，也支持 Markdown；图片可上传、粘贴或拖入正文 |
+| 内容整理 | 草稿与发布分开，分类在博客中逐项添加，标签随文章自由填写 |
+| 科研与经历 | 集中展示论文、奖项、教育和项目经历 |
+| AI 小伙伴 | 可选猫或狗，接入 DeepSeek，结合公开资料和对话回答访客问题 |
+| 自己保存数据 | 网站资料、文章、知识库和图片统一保存在 SQLite，无需额外安装数据库服务 |
+
+不配置 AI，也能正常使用主页和博客。项目自带的演示内容可以在后台替换，其中的人物、学校与科研记录均为虚构。
+
+## 本地运行
+
+需要 **Node.js 24 LTS**。
 
 ```bash
-# 克隆仓库
-git clone https://github.com/JiangYuxin-Jim/A-personal-website-template-based-on-Express.git
-cd A-personal-website-template-based-on-Express
-
-# 安装依赖
-npm install
-
-# 启动开发服务器（自动重载）
-npm run dev
-
-# 或启动生产服务器
+git clone https://github.com/JiangYuxin-Jim/MePage.git
+cd MePage
+npm ci
+cp .env.example .env
+cp config.example.json config.json
 npm start
 ```
 
-浏览器打开 `http://localhost:3000` 即可预览。
+| 入口 | 默认地址 |
+| --- | --- |
+| 网站前台 | http://localhost:18731 |
+| 网页后台 | http://127.0.0.1:18732 |
+| 初始账号 / 密码 | `admin` / `admin` |
 
-## 📁 项目结构
+账号和密码在 `.env` 中设置，均不能为空，密码没有最小长度要求。公网部署前请修改初始密码。`npm start` 会先构建编辑器，再启动前后台；按 `Ctrl+C` 停止。
 
-```
-.
-├── app.js                  # Express 服务器和路由逻辑
-├── package.json
-├── content/                # 📝 所有内容都在这里 —— 只需编辑这些文件！
-│   ├── site.json           # 个人信息（姓名、学校、GitHub、邮箱等）
-│   ├── about/
-│   │   ├── about.md        # 自我介绍（双语）
-│   │   └── about.md.example  # 文件模板参考
-│   ├── blog/
-│   │   ├── hello-world.md  # 示例博客文章
-│   │   └── TEMPLATE.md.example  # 博客文章模板
-│   ├── experience/
-│   │   ├── list.md         # 教育背景与经历
-│   │   └── list.md.example # 文件模板参考
-│   ├── publications/
-│   │   ├── list.md         # 论文发表与获奖
-│   │   └── list.md.example # 文件模板参考
-│   └── images/
-│       ├── README.md       # 图片使用说明
-│       └── photo.png       # 你的个人照片（可选）
-├── views/                  # EJS 模板（通常无需修改）
-│   ├── partials/           # 头部、导航栏、侧边栏、页脚
-│   └── *.ejs               # 页面模板
-├── public/
-│   ├── css/style.css       # 样式表
-│   └── js/main.js          # 语言切换与 UI 逻辑
-└── docs/                   # 截图和文档资源
-```
+登录后，可以从“关于我”“博客”“科研与经历”分别修改资料、管理文章和补充经历。写文章、插图和发布的步骤见[后台使用图解](#后台使用图解)。
 
-## ✏️ 如何自定义
+## 服务器部署与 PM2 保活
 
-### 第一步：修改个人信息
+在服务器上安装 Node.js 24 LTS，执行上面的克隆、安装和复制配置步骤。
 
-编辑 **`content/site.json`**：
+先修改 `.env` 中的初始账号密码，再将 `config.json` 的 `server` 部分改为：
 
 ```json
 {
-  "name": "你的名字",
-  "nameEn": "Your Name",
-  "initial": "Y",
-  "title": "你的职位 / 头衔",
-  "titleEn": "Your Job Title",
-  "school": "你的学校 / 公司",
-  "schoolEn": "Your University / Company",
-  "email": "your.email@example.com",
-  "github": "yourusername",
-  "researchInterests": [
-    { "zh": "研究方向一", "en": "Research Area 1" },
-    { "zh": "研究方向二", "en": "Research Area 2" }
-  ],
-  "metaDescription": "个人学术主页与技术博客。"
+  "port": 18731,
+  "adminPort": 18732,
+  "host": "0.0.0.0",
+  "adminHost": "0.0.0.0",
+  "publicUrl": "http://你的服务器IP:18731",
+  "adminUrl": "http://你的服务器IP:18732",
+  "trustProxy": false,
+  "trustedProxies": ["loopback"]
 }
 ```
 
-| 字段 | 说明 |
-|-------|-------------|
-| `name` / `nameEn` | 你的名字（中文和英文） |
-| `initial` | 一个字母，用作网站图标和头像占位符 |
-| `title` / `titleEn` | 你的职位或头衔 |
-| `school` / `schoolEn` | 你的所属单位 |
-| `email` | 你的邮箱（设为 `your.email@example.com` 则隐藏） |
-| `github` | 你的 GitHub 用户名（设为 `yourusername` 则隐藏） |
-| `researchInterests` | 研究方向列表（双语） |
-| `avatar` | （可选）头像图片路径，如 `"/images/photo.png"` |
+这里只修改 `server`，保留原有的 `ai` 和 `limits`。管理端默认仅允许本机访问，将 `adminHost` 设为 `0.0.0.0` 后，才能通过服务器 IP 访问。
 
-### 第二步：写自我介绍
-
-编辑 **`content/about/about.md`**：
-
-```markdown
----
-section: about
-
-text_zh: |
-  第一段中文介绍。
-
-  第二段中文介绍。空一行创建新段落。
-
-text_en: |
-  First paragraph in English.
-
-  Second paragraph. Blank lines create new paragraphs.
----
-```
-
-### 第三步：写博客文章
-
-在 **`content/blog/`** 目录下创建 `.md` 文件，每篇文件开头需要填写 frontmatter：
-
-```markdown
----
-title: 文章标题
-date: 2026-07-20
-category: 技术文章
-tags: [JavaScript, Node.js]
-excerpt: 显示在博客列表中的简短摘要（可选）
----
-
-## 第一章
-
-用 Markdown 写正文内容...
-```
-
-**Frontmatter 字段说明：**
-
-| 字段 | 必填 | 说明 |
-|-------|----------|-------------|
-| `title` | ✅ | 文章标题 |
-| `date` | ✅ | 发布日期（YYYY-MM-DD） |
-| `category` | ❌ | 分类名（需与 `app.js` 中 CATEGORIES 定义一致） |
-| `tags` | ❌ | 标签数组：`[标签1, 标签2]` |
-| `excerpt` | ❌ | 摘要（不填则自动截取正文前150字） |
-
-**添加或修改分类**，编辑 `app.js` 中的 `CATEGORIES` 数组：
-
-```js
-const CATEGORIES = ['技术文章', '项目实战', '教程笔记'];
-// 直接添加新分类名称即可
-```
-
-### 第四步：更新经历
-
-编辑 **`content/experience/list.md`**：
-
-```yaml
-items:
-  - year: "2026"
-    title_zh: "经历的中文标题"
-    title_en: "English Title"
-    desc_zh: "中文描述（可选）"
-    desc_en: "English description (optional)"
-```
-
-### 第五步：更新发表与获奖
-
-编辑 **`content/publications/list.md`**（按 year 降序自动排列）：
-
-```yaml
-# 单语言论文：
-items:
-  - year: "2025"
-    title: "Paper Title"
-    venue: "Journal Name"
-    doi: "10.xxxx/example"
-    link: "https://doi.org/10.xxxx/example"
-
-# 双语条目：
-  - year: "2025"
-    title_zh: "中文论文标题"
-    title_en: "English Paper Title"
-    venue_zh: "《期刊名》"
-    venue_en: "Journal Name"
-
-# 获奖类（用 summary 替代 venue）：
-  - year: "2025"
-    title_zh: "获奖荣誉"
-    title_en: "Awards & Honors"
-    summary_zh: "国家奖学金 · 竞赛奖项"
-    summary_en: "National Scholarship"
-```
-
-### 第六步：放上你的照片
-
-将照片命名为 `photo.png` 放入 `content/images/` 目录，或在 `site.json` 中设置 `avatar` 字段指向自定义路径。
-
-如果不放照片，侧边栏会显示你的名字首字母作为占位符。
-
-## 🎨 Markdown 功能
-
-你的博客文章支持完整的 Markdown 语法和代码高亮：
-
-- **代码块**自动识别语言（Python、JavaScript、Java、SQL、Bash 等）
-- **表格**、**引用**、**图片**、**链接**
-- **自动目录** — 由 `##`（h2）标题自动生成
-- **阅读时长**估算
-
-## 🖥️ 页面路由
-
-| 路由 | 页面 | 内容来源 |
-|-------|------|----------------|
-| `/` | 首页（关于） | `content/about/about.md` |
-| `/blog` | 博客列表 | `content/blog/*.md` |
-| `/blog/:slug` | 博客详情 | 对应博客 markdown 文件 |
-| `/publications` | 发表与获奖 | `content/publications/list.md` |
-| `/experience` | 经历 | `content/experience/list.md` |
-
-## 🚢 部署
-
-### 方式一：部署到云平台
-
-这是标准的 Node.js 应用，可部署到任何支持 Node.js 的平台：
-
-**Railway / Render / Heroku：**
-```bash
-# 构建命令
-npm install
-
-# 启动命令
-npm start
-```
-
-注意：部分平台需要在环境变量中设置 `PORT`。
-
-### 方式二：VPS 部署（PM2）
+在服务器防火墙和云平台安全组中放行所选端口，然后启动 PM2：
 
 ```bash
+npm run build
 npm install -g pm2
-pm2 start app.js --name "homepage"
-pm2 save
+pm2 start app.js --name mepage
 pm2 startup
+# 按终端提示执行生成的开机启动命令
+pm2 save
 ```
 
-### 方式三：GitHub Pages
+前后台在同一个进程中运行，PM2 使用单实例即可。浏览器打开 `http://服务器IP:18731` 查看网站，打开 `http://服务器IP:18732` 登录后台。
 
-由于这是服务端渲染应用，不能直接部署到 GitHub Pages。建议使用云平台或 VPS。
-
-## 🔧 技术栈
-
-- **后端框架**：[Express](https://expressjs.com/) 5.x
-- **模板引擎**：[EJS](https://ejs.co/)
-- **Markdown 解析**：[marked](https://marked.js.org/) + [highlight.js](https://highlightjs.org/)
-- **Frontmatter**：[gray-matter](https://github.com/jonschlinkert/gray-matter)
-- **开发服务器**：[nodemon](https://nodemon.io/)
-
-## 📄 许可证
-
-MIT — 自由使用和修改，打造你自己的个人主页。
-
----
-
-## 🙋 常见问题
-
-### 如何修改主题颜色？
-
-编辑 `public/css/style.css` 中第 5-21 行的 CSS 变量：
-
-```css
-:root {
-  --bg: #fafaf9;           /* 页面背景 */
-  --text: #3c4043;         /* 正文颜色 */
-  --accent: #1a56db;       /* 强调色（链接、按钮等） */
-  --heading: #202124;      /* 标题颜色 */
-  /* ... 更多变量 ... */
-}
+```bash
+pm2 logs mepage       # 查看日志
+pm2 restart mepage    # 重启前后台
+pm2 stop mepage       # 停止前后台
 ```
 
-### 如何去掉双语功能？
+使用域名时，可用 Nginx 等反向代理分别转发前台和后台端口，配置 HTTPS，并把两个入口 URL 改为实际域名。需要获取代理后的访客 IP 时，启用 `trustProxy`，并在 `trustedProxies` 中填写实际可信代理地址。
 
-1. 删除 `views/*.ejs` 文件中的语言切换按钮
-2. 删除 EJS 模板中的 `.zh` / `.en` 包裹标签
-3. 删除 `style.css` 中 `/* Language Toggle */` 下的 CSS 规则
-4. 将内容文件中的 frontmatter 简化为单语言
+更新代码后，在项目目录执行 `npm ci`、`npm run build`、`pm2 restart mepage`。
 
-### 如何添加网站统计（Google Analytics）？
+## 配置放在哪里
 
-在 `views/partials/scripts.ejs` 的 `</body>` 标签前添加统计代码。
+日常内容在网页后台修改，部署参数放在本地配置文件中。
 
-### 可以修改导航栏的文字吗？
+| 位置 | 保存内容 | 修改方式 |
+| --- | --- | --- |
+| `.env` | 管理账号、密码、DeepSeek API Key | 修改本地文件 |
+| `config.json` | 访问地址、端口、模型参数、调用限额 | 修改本地文件 |
+| `data/site.sqlite` | 个人资料、文章、分类、科研经历、知识库、图片，以及登录会话和调用计数 | 网页后台自动保存 |
+| `assets/demo/` | 首次启动导入 SQLite 的演示配图 | 日常上传的图片直接存入数据库 |
 
-编辑 `views/` 目录下各页面文件中的 `<nav class="section-nav">` 部分。
+`.env` 示例：
 
----
+```dotenv
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=请换成你自己的密码
+DEEPSEEK_API_KEY=
+```
 
-💡 **遇到问题？** [提交 Issue](https://github.com/JiangYuxin-Jim/A-personal-website-template-based-on-Express/issues)，我们很乐意帮忙！
+账号密码只从 `.env` 读取，不保存到 SQLite。网页后台保存的内容立即生效，无需再维护一份 Markdown 或 JSON 内容文件；修改监听地址或端口后则需要重启服务。
+
+Git 和 Docker 构建会忽略真实 `.env`、本地 `config.json`、数据库及运行日志。仓库提供的示例文件是 `.env.example` 和 `config.example.json`。
+
+## 后台使用图解
+
+### 1. 登录，找到内容入口
+
+本地打开 `http://127.0.0.1:18732`，使用 `.env` 中的账号密码登录。示例配置为 `admin` / `admin`，修改后以自己的配置为准。
+
+从左侧导航可以进入个人资料、博客、科研经历和宠物助手。先替换演示资料，再开始发文章。
+
+<details>
+<summary>查看登录页与后台概览</summary>
+
+![MePage 管理端登录页](assets/readme/admin-login.jpg)
+
+![MePage 后台概览与左侧导航](assets/readme/admin-overview.jpg)
+
+</details>
+
+### 2. 在“博客”里添加分类
+
+输入分类名称，点击“添加分类”即可保存。下方文章列表会标出草稿和已发布状态，也可以在这里编辑或查看文章。写新文章时，点击右上角“写一篇文章”。
+
+![博客管理：分类、文章状态与写文章入口](assets/readme/admin-posts.jpg)
+
+### 3. 写正文，直接插入图片
+
+填好标题、选好分类，就可以像写文档一样输入正文、添加标题和列表。文章地址会自动生成，保留默认值即可。
+
+每篇文章选择一个分类；标签可以填多个，用逗号或回车分隔，无需提前创建。
+
+点击“插入图片”选择本地图片，或将图片粘贴、拖入正文。编辑器会直接显示图片，并自动生成地址。插图后可继续输入文字，也可以点击“在文末继续写”。支持 PNG、JPEG、WebP，单张最大 5MB；需要 Markdown 时，用编辑器下方的按钮切换。
+
+![文章编辑器：标题、分类、标签、正文插图与保存发布按钮](assets/readme/admin-editor.jpg)
+
+*图中是已有文章的编辑页；首次发布时，右下角按钮显示“发布文章”，已发布文章则显示“更新发布”。*
+
+### 4. 预览，再保存或发布
+
+| 操作 | 结果 |
+| --- | --- |
+| 预览效果 | 查看当前正文的渲染效果，不会发布 |
+| 保存草稿 | 保存为仅自己可见的文章，稍后可从博客列表继续编辑 |
+| 发布文章 | 让访客在前台博客中阅读 |
+| 更新发布 | 保存已发布文章的修改，前台同步更新 |
+| 查看已发布文章 | 打开前台页面，确认最终效果 |
+
+对已发布文章点击“保存草稿”，会在确认后将其从前台撤下。打开编辑器或预览文章不会改变线上内容。
+
+## AI 小伙伴如何回答
+
+在 `.env` 填入 `DEEPSEEK_API_KEY`，将 `config.json` 的 `ai.enabled` 改为 `true`，然后在后台整理、发布知识库。模型和回答长度等参数在 `config.json` 的 `ai` 中设置。
+
+![MePage AI 问答流程](assets/readme/ai-flow.webp)
+
+每轮通过长度、频率和额度检查的提问，都会请求 DeepSeek。知识库只提供事实，不预设答案，也不缓存固定问答。
+
+- 资料来自公开简介、已发布知识库、可见的科研经历与已发布博客；未发布内容不会作为资料发送。
+- 每次请求会带上服务端保存的最近三轮对话。例如先问“主人做过哪些项目”，再追问“这个项目具体做什么”；指代不清时，要求模型澄清。
+- 模型应围绕站长回答，资料没有记载的细节需说明不足。无关问题和越界请求有相应的拒答规则。
+- 模型未开启、连接失败或输出未通过安全检查时，界面会显示相应提示，不会用预设答案替代。成功回复标注“AI 生成”。
+
+匿名访客无需注册。调用限制由服务端执行，配置位于 `config.json` 的 `limits`：
+
+| 参数 | 默认值 | 作用 |
+| --- | --- | --- |
+| `visitorDaily` | 10 | 每个浏览器访客每日上限 |
+| `ipDaily` | 30 | 每个 IP 每日上限 |
+| `siteDaily` | 100 | 全站每日上限 |
+| `perMinute` | 5 | 每个访客和 IP 每分钟上限 |
+| `concurrent` | 2 | 全站同时请求模型的上限，同一访客同时只能发一个问题 |
+| `questionLength` | 500 | 单次提问字符上限 |
+| `timezone` | `Asia/Shanghai` | 每日额度的日期划分时区 |
+
+模型的越界拒答也计入调用次数。请求一旦发给供应商，即使失败或超时也会计数，重试仍需消耗额度。模型调用费用由部署者承担。
+
+## 内容导出与演示重置
+
+后台支持导出和恢复网站内容，包括图片。账号密码、API Key、部署参数、访客会话与调用额度不会导出。恢复会替换当前网站内容。
+
+需要重新载入演示内容时，先停止服务，再执行：
+
+```bash
+npm run seed:demo
+```
+
+这会覆盖网站内容和图片，不创建备份；账号、密钥与调用计数保持不变。
+
+## Docker（可选）
+
+先复制并编辑两份示例配置，再执行：
+
+```bash
+docker compose up -d --build
+# 停止：docker compose stop
+```
+
+Docker 默认使用前述两个端口。修改 `config.json` 中的端口时，也要同步修改 `compose.yaml` 的端口映射。数据保存在 Docker 命名卷中，`.env` 和 `config.json` 从本机以只读方式挂载；Compose 将容器内的监听地址设为 `0.0.0.0`。

@@ -1,6 +1,7 @@
 <footer class="site-footer">
-  <p>&copy; <%= new Date().getFullYear() %> <%= site.name %></p>
+  <p>&copy; <%= new Date().getFullYear() %> <%= site.name %><% if (typeof demoContent !== 'undefined' && demoContent) { %><span class="demo-label"><span class="zh">展示内容 · 人物与项目为虚构资料</span><span class="en">Showcase content · Fictional profile and projects</span></span><% } %></p>
 </footer>
 <script src="/js/main.js"></script>
+<%- include('pet') %>
 </body>
 </html>

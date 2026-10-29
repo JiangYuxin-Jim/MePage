@@ -17,10 +17,10 @@
     <section class="content-section">
       <h2 class="section-title"><span class="zh">博客</span><span class="en">Blog</span></h2>
       <div class="filter-bar">
-        <button class="filter-btn <%= !activeCategory ? 'active' : '' %>" onclick="filterCategory('')">全部</button>
+        <button class="filter-btn <%= !activeCategory ? 'active' : '' %>" data-category="">全部</button>
         <% getCategoryList().forEach(function(cat) { %>
           <button class="filter-btn <%= activeCategory === cat ? 'active' : '' %>"
-                  onclick="filterCategory('<%= cat %>')"><%= cat %></button>
+                  data-category="<%= cat %>"><%= cat %></button>
         <% }) %>
       </div>
 
@@ -30,8 +30,9 @@
             <span class="blog-list-date"><%= post.date.toISOString().slice(0, 10) %></span>
             <div class="blog-list-body">
               <div class="blog-list-tags">
-                <span class="blog-list-tag"><%= post.category %></span>
-                <% post.tags.forEach(function(tag) { %><span class="blog-list-tag"><%= tag %></span><% }) %>
+                <span class="blog-list-category"><span class="zh">分类：</span><span class="en">Category: </span><%= post.category %></span>
+                <% post.tags.forEach(function(tag) { %><span class="blog-list-tag">#<%= tag %></span><% }) %>
+                <% if (!post.tags.length) { %><span class="blog-no-tags">无标签</span><% } %>
               </div>
               <div class="blog-list-entry-title"><%= post.title %></div>
               <% if (post.excerpt) { %><div class="blog-list-excerpt"><%= post.excerpt %></div><% } %>

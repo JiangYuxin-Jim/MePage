@@ -1,4 +1,35 @@
+# Dependencies and generated bundles
 node_modules/
-.superpowers/
 dist/
+coverage/
+public/admin/editor.js
+public/admin/editor.js.map
+
+# Local secrets and deployment configuration
+.env
+.env.*
+!.env.example
+config.json
+config.*.json
+!config.example.json
+
+# Runtime state (including SQLite, locks and exports)
+data/
+*.sqlite
+*.sqlite-*
+*.db
+*.db-*
+*.log
+logs/
+*.pid
+*.pid.lock
+*.tmp
+
+# Local editor / agent files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.superpowers/
 .claude/
+.codex/

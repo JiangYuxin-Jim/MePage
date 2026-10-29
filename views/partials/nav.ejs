@@ -1,6 +1,9 @@
 <nav class="section-nav">
-  <a href="/"            class="<%= currentPage === 'home' ? 'active' : '' %>"><span class="zh">关于</span><span class="en">About</span></a>
-  <a href="/blog"        class="<%= currentPage === 'blog' ? 'active' : '' %>"><span class="zh">博客</span><span class="en">Blog</span></a>
-  <a href="/publications" class="<%= currentPage === 'publications' ? 'active' : '' %>"><span class="zh">发表与获奖</span><span class="en">Publications</span></a>
-  <a href="/experience"  class="<%= currentPage === 'experience' ? 'active' : '' %>"><span class="zh">经历</span><span class="en">Experience</span></a>
+  <a href="/" class="<%= currentPage === 'home' ? 'active' : '' %>"><span class="zh">关于我</span><span class="en">About me</span></a>
+  <% if (navigation.blog.visible) { %>
+  <a href="/blog" class="<%= currentPage === 'blog' ? 'active' : '' %>"><span class="zh">博客</span><span class="en">Blog</span></a>
+  <% } %>
+  <% if (navigation.publications.visible || navigation.experience.visible) { %>
+  <a href="/research" class="<%= currentPage === 'research' ? 'active' : '' %>"><span class="zh">科研与经历</span><span class="en">Research &amp; Experience</span></a>
+  <% } %>
 </nav>

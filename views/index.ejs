@@ -1,20 +1,25 @@
 <%- include('partials/head', { title, currentPage }) %>
-
-<button class="lang-toggle" onclick="toggleLang()" aria-label="Switch language">
-  <span class="zh">EN</span><span class="en">中</span>
-</button>
-
+<button class="lang-toggle" onclick="toggleLang()" aria-label="Switch language"><span class="zh">EN</span><span class="en">中</span></button>
 <div class="page-wrapper">
   <%- include('partials/sidebar') %>
-
-  <main class="main-content">
+  <main class="main-content" id="main-content" tabindex="-1">
     <%- include('partials/nav', { currentPage }) %>
-
-    <section class="content-section">
+    <header class="profile-hero">
+      <p class="profile-location"><span class="status-dot" aria-hidden="true"></span><span class="zh"><%= site.school %></span><span class="en"><%= site.schoolEn || site.school %></span></p>
+      <h1><span class="zh">你好，我是 <%= site.name %>。</span><span class="en">Hello, I'm <%= site.nameEn || site.name %>.</span></h1>
+      <p class="profile-role"><span class="zh"><%= site.title %></span><span class="en"><%= site.titleEn || site.title %></span></p>
+      <div class="profile-actions">
+        <% if (navigation.blog.visible) { %><a href="/blog" class="profile-primary"><span class="zh">阅读我的博客</span><span class="en">Read my blog</span><span aria-hidden="true">↗</span></a><% } %>
+        <% if (navigation.publications.visible || navigation.experience.visible) { %><a href="/research" class="profile-secondary"><span class="zh">科研与经历</span><span class="en">Research &amp; Experience</span></a><% } %>
+      </div>
+      <div class="profile-decoration" aria-hidden="true"><span></span><span></span><span></span></div>
+    </header>
+    <section class="content-section about-section">
+      <h2 class="section-title"><span class="zh">关于我</span><span class="en">About me</span></h2>
       <div class="about-text zh"><%- aboutZhHtml %></div>
       <div class="about-text en"><%- aboutEnHtml %></div>
     </section>
+
   </main>
 </div>
-
 <%- include('partials/scripts', { currentPage }) %>

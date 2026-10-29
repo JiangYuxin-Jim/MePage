@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>管理我的网站</title><link rel="stylesheet" href="/editor/toastui-editor.css"><link rel="stylesheet" href="/admin-assets/style.css"></head>
+<body>
+<div id="toast" role="status" aria-live="polite"></div>
+<section id="auth" class="auth-screen" hidden>
+ <div class="auth-intro"><div class="brand-mark">⌂</div><h1>这是你的网站。<br>让它像你。</h1><p>写下经历、分享作品，让小伙伴替你向访客介绍自己。</p><div class="auth-pet" aria-hidden="true">🐈</div></div>
+ <div class="auth-form"><span class="small-label">个人网站管理</span><h2 id="auth-title">欢迎回来</h2><p id="auth-help">登录后，所有内容都可以在这里修改。</p>
+ <form id="auth-form"><label>管理员账号<input name="username" autocomplete="username" required maxlength="128" placeholder="与 .env 中 ADMIN_USERNAME 一致"></label><label>密码<input name="password" type="password" autocomplete="current-password" required maxlength="1024"></label><p id="auth-error" class="error" role="alert"></p><button class="primary" type="submit" id="auth-submit">登录管理端</button></form></div>
+</section>
+<div id="workspace" class="workspace" hidden>
+ <aside class="admin-sidebar"><a href="#overview" class="brand"><span class="brand-mark">⌂</span><span>我的网站<small>内容工作室</small></span></a><nav id="nav" aria-label="管理导航"></nav><div class="sidebar-bottom"><a id="visit-site" href="#" target="_blank" rel="noopener">查看我的网站 ↗</a><button id="logout" class="quiet">退出登录</button></div></aside>
+ <div class="admin-main"><header class="topbar"><button id="mobile-menu" class="quiet" aria-label="打开导航">☰</button><span id="breadcrumb">概览</span><span id="owner"></span></header><main id="main" tabindex="-1"></main></div>
+</div>
+<dialog id="modal"><div class="dialog-head"><h2 id="modal-title"></h2><button id="close-modal" class="quiet" aria-label="关闭">×</button></div><div id="modal-body"></div></dialog>
+<script src="/admin-assets/editor.js"></script><script src="/admin-assets/editor-images.js"></script><script src="/admin-assets/main.js"></script>
+</body></html>

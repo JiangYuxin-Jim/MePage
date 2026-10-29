@@ -1,308 +1,135 @@
-# Personal Academic Homepage & Blog
+# MePage
 
-> 📖 [中文版](README.md) | English Version
+**A minimal personal website with an optional AI assistant, easy to deploy and maintain.**
 
-A lightweight, bilingual (Chinese/English) personal academic homepage and blog system. Built with **Express + EJS + Markdown**, zero database required — all content is managed through Markdown files.
+Install Node.js 24 LTS, download the project, and run the commands below. The project includes example configuration and demo content, with no separate database server to install.
 
-## ✨ Features
+Use it for your profile, portfolio, blog and research. After deployment, you can edit text, insert images and publish posts in the browser admin without writing code.
 
-- 🌐 **Bilingual Support** — Chinese/English toggle, all content supports dual language
-- 📝 **Markdown Writing** — Write blog posts in Markdown with syntax highlighting (highlight.js)
-- 🗂️ **Zero Database** — All content stored as Markdown files, no database setup needed
-- 🎨 **Clean Design** — Minimal academic style, responsive layout, dark code blocks
-- ⚡ **Fast & Lightweight** — Express server, server-side rendering, instant load
-- 🔧 **Easy Customization** — Edit `content/site.json` and Markdown files to change everything
-- 📱 **Responsive** — Works on desktop, tablet, and mobile
+[GitHub](https://github.com/JiangYuxin-Jim/MePage) · [中文](README.md)
 
-## 🚀 Quick Start
+![MePage public homepage](assets/readme/homepage.jpg)
 
-### Prerequisites
+*Screenshots use fictional demo content. Replace the profile, avatar and theme in the admin.*
 
-- [Node.js](https://nodejs.org/) 18+
+- Bilingual profile, research timeline and customizable accent color.
+- Visual blog editor with optional Markdown, image upload/paste/drag, drafts, publishing and categories.
+- Optional cat or dog companion using DeepSeek and your public knowledge base, with scope checks and visitor/IP/site quotas.
+- SQLite stores content, settings and image bytes. No separate database server needed; content export and restore are available in the admin.
 
-### Installation
+The demo people, institutions and research records are fictional and can be replaced in the admin. The profile and blog also work without AI.
+
+## Run locally
+
+Requires **Node.js 24 LTS**.
 
 ```bash
-# Clone the repository
-git clone https://github.com/JiangYuxin-Jim/A-personal-website-template-based-on-Express.git
-cd A-personal-website-template-based-on-Express
-
-# Install dependencies
-npm install
-
-# Start development server (with auto-reload)
-npm run dev
-
-# Or start production server
+git clone https://github.com/JiangYuxin-Jim/MePage.git
+cd MePage
+npm ci
+cp .env.example .env
+cp config.example.json config.json
 npm start
 ```
 
-Open `http://localhost:3000` in your browser.
+The website is at <http://localhost:18731> and the admin at <http://127.0.0.1:18732>. The initial username and password are `admin` / `admin`; change them in `.env`. Neither field can be empty, but there is no minimum password length. Press `Ctrl+C` to stop.
 
-## 📁 Project Structure
+After signing in, replace the profile and About text, add blog categories, and publish your first article. Upload, paste or drag PNG/JPEG/WebP images into the editor (up to 5MB each); image URLs are created automatically. Update research records and enable the AI companion only if needed.
 
-```
-.
-├── app.js                  # Express server & route logic
-├── package.json
-├── content/                # 📝 ALL content lives here — just edit these files!
-│   ├── site.json           # Personal info (name, school, GitHub, email, etc.)
-│   ├── about/
-│   │   ├── about.md        # About / self-introduction (bilingual)
-│   │   └── about.md.example  # Template reference
-│   ├── blog/
-│   │   ├── hello-world.md  # Example blog post
-│   │   └── TEMPLATE.md.example  # Blog post template
-│   ├── experience/
-│   │   ├── list.md         # Education & experience
-│   │   └── list.md.example # Template reference
-│   ├── publications/
-│   │   ├── list.md         # Publications & awards
-│   │   └── list.md.example # Template reference
-│   └── images/
-│       ├── README.md       # Image usage guide
-│       └── photo.png       # Your profile photo (optional)
-├── views/                  # EJS templates (usually no need to modify)
-│   ├── partials/           # Header, navbar, sidebar, footer
-│   └── *.ejs               # Page templates
-├── public/
-│   ├── css/style.css       # Stylesheet
-│   └── js/main.js          # Language toggle & UI logic
-└── docs/                   # Screenshots & documentation assets
-```
+![MePage blog and categories](assets/readme/blog.jpg)
 
-## ✏️ How to Customize
+## Deploy on a server
 
-### Step 1: Update Personal Information
-
-Edit **`content/site.json`**:
-
-```json
-{
-  "name": "Your Name",
-  "nameEn": "Your Name (English)",
-  "initial": "Y",
-  "title": "Your Job Title",
-  "titleEn": "Your Job Title (English)",
-  "school": "Your University / Company",
-  "schoolEn": "Your University / Company (English)",
-  "email": "your.email@example.com",
-  "github": "yourusername",
-  "researchInterests": [
-    { "zh": "研究方向一", "en": "Research Area 1" },
-    { "zh": "研究方向二", "en": "Research Area 2" }
-  ],
-  "metaDescription": "Personal academic homepage and tech blog."
-}
-```
-
-| Field | Description |
-|-------|-------------|
-| `name` / `nameEn` | Your name in Chinese and English |
-| `initial` | A single letter used as favicon and avatar placeholder |
-| `title` / `titleEn` | Your job title or role |
-| `school` / `schoolEn` | Your affiliation |
-| `email` | Your email (hidden if set to `your.email@example.com`) |
-| `github` | Your GitHub username (hidden if set to `yourusername`) |
-| `researchInterests` | List of research interests (bilingual) |
-| `avatar` | (Optional) Path to your profile photo, e.g., `"/images/photo.png"` |
-
-### Step 2: Write Your About Page
-
-Edit **`content/about/about.md`**:
-
-```markdown
----
-section: about
-
-text_zh: |
-  第一段中文介绍。
-
-  第二段中文介绍。空一行创建新段落。
-
-text_en: |
-  First paragraph in English.
-
-  Second paragraph. Blank lines create new paragraphs.
----
-```
-
-### Step 3: Add Blog Posts
-
-Create `.md` files in **`content/blog/`**. Each file needs frontmatter at the top:
-
-```markdown
----
-title: Your Post Title
-date: 2026-07-20
-category: 技术文章
-tags: [JavaScript, Node.js]
-excerpt: A short summary shown in the blog list (optional)
----
-
-## Section 1
-
-Write your content here with full Markdown support...
-```
-
-**Frontmatter fields:**
-
-| Field | Required | Description |
-|-------|----------|-------------|
-| `title` | ✅ | Post title |
-| `date` | ✅ | Publication date (YYYY-MM-DD) |
-| `category` | ❌ | Category name (must match one defined in `app.js` CATEGORIES) |
-| `tags` | ❌ | Array of tags: `[tag1, tag2]` |
-| `excerpt` | ❌ | Summary text (auto-generated from first 150 chars if omitted) |
-
-**To add or change categories**, edit the `CATEGORIES` array in `app.js`:
-
-```js
-const CATEGORIES = ['技术文章', '项目实战', '教程笔记'];
-// Just add new category names to the array
-```
-
-### Step 4: Update Experience
-
-Edit **`content/experience/list.md`**:
-
-```yaml
-items:
-  - year: "2026"
-    title_zh: "经历的中文标题"
-    title_en: "English Title"
-    desc_zh: "中文描述（可选）"
-    desc_en: "English description (optional)"
-```
-
-### Step 5: Update Publications & Awards
-
-Edit **`content/publications/list.md`** (sorted by year descending):
-
-```yaml
-# Single-language paper:
-items:
-  - year: "2025"
-    title: "Paper Title"
-    venue: "Journal Name"
-    doi: "10.xxxx/example"
-    link: "https://doi.org/10.xxxx/example"
-
-# Bilingual entry:
-  - year: "2025"
-    title_zh: "中文论文标题"
-    title_en: "English Paper Title"
-    venue_zh: "《期刊名》"
-    venue_en: "Journal Name"
-
-# Awards (use summary instead of venue):
-  - year: "2025"
-    title_zh: "获奖荣誉"
-    title_en: "Awards & Honors"
-    summary_zh: "国家奖学金 · 竞赛奖项"
-    summary_en: "National Scholarship"
-```
-
-### Step 6: Add Your Profile Photo
-
-Place a photo named `photo.png` in `content/images/`. Or set a custom path via `avatar` in `site.json`.
-
-If no photo is provided, your initial letter is displayed as a placeholder.
-
-## 🎨 Markdown Features
-
-Your blog posts support full Markdown with syntax highlighting:
-
-- **Code blocks** with language detection (Python, JavaScript, Java, SQL, Bash, etc.)
-- **Tables**, **blockquotes**, **images**, **links**
-- **Automatic Table of Contents** — generated from `##` (h2) headings
-- **Reading time** estimation
-
-## 🖥️ Pages
-
-| Route | Page | Content Source |
-|-------|------|----------------|
-| `/` | Home (About) | `content/about/about.md` |
-| `/blog` | Blog List | `content/blog/*.md` |
-| `/blog/:slug` | Blog Post | Individual blog markdown file |
-| `/publications` | Publications & Awards | `content/publications/list.md` |
-| `/experience` | Experience | `content/experience/list.md` |
-
-## 🚢 Deployment
-
-### Option 1: Deploy to cloud platforms
-
-This is a standard Node.js app — deploy anywhere that supports Node.js:
-
-**Railway / Render / Heroku:**
-```bash
-# Build command
-npm install
-
-# Start command
-npm start
-```
-
-Make sure to set the `PORT` environment variable if required by the platform.
-
-### Option 2: Deploy with PM2 (VPS)
+Install Node.js 24 LTS, then clone the project, install dependencies and copy the example files as shown above. Change the credentials in `.env`. In the `server` section of `config.json`, set `adminHost` to `0.0.0.0`, and set `publicUrl` and `adminUrl` to `http://YOUR_SERVER_IP:18731` and `http://YOUR_SERVER_IP:18732`. Open the selected ports in your firewall and security group.
 
 ```bash
+npm run build
 npm install -g pm2
-pm2 start app.js --name "homepage"
-pm2 save
+pm2 start app.js --name mepage
 pm2 startup
+# Run the startup command printed by PM2, then:
+pm2 save
 ```
 
-### Option 3: GitHub Pages (static export)
+Visit the public site and admin using your server IP and their respective ports.
 
-Since this is a server-rendered app, it cannot be directly deployed to GitHub Pages. Consider using a cloud platform or VPS instead.
-
-## 🔧 Tech Stack
-
-- **Backend**: [Express](https://expressjs.com/) 5.x
-- **Template Engine**: [EJS](https://ejs.co/)
-- **Markdown Parsing**: [marked](https://marked.js.org/) + [highlight.js](https://highlightjs.org/)
-- **Frontmatter**: [gray-matter](https://github.com/jonschlinkert/gray-matter)
-- **Dev Server**: [nodemon](https://nodemon.io/)
-
-## 📄 License
-
-MIT — feel free to use and modify for your own personal homepage.
-
----
-
-## 🙋 FAQ
-
-### How do I change the theme colors?
-
-Edit the CSS variables in `public/css/style.css`, lines 5-21:
-
-```css
-:root {
-  --bg: #fafaf9;           /* Page background */
-  --text: #3c4043;         /* Body text */
-  --accent: #1a56db;       /* Accent color (links, buttons) */
-  --heading: #202124;      /* Heading text */
-  /* ... more variables ... */
-}
+```bash
+pm2 logs mepage
+pm2 restart mepage
+pm2 stop mepage
 ```
 
-### How do I remove the bilingual feature?
+For public hosting, configure a domain and HTTPS reverse proxy to the two ports, then update the two URLs. Enable `trustProxy` only when needed, and list the actual proxy addresses in `trustedProxies`.
 
-1. Delete the language toggle button from `views/*.ejs` files
-2. Remove `.zh` / `.en` span wrappers in the EJS templates
-3. Remove the CSS rules under `/* Language Toggle */` in `style.css`
-4. Simplify frontmatter in content files to single language
+One PM2 process serves both ports; use a single instance. After an update, run `npm ci`, `npm run build` and `pm2 restart mepage` in the project directory.
 
-### How do I add Google Analytics?
+## Configuration
 
-Add your tracking code in `views/partials/scripts.ejs` before the closing `</body>` tag.
+| Location | Purpose |
+| --- | --- |
+| `.env` | `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `DEEPSEEK_API_KEY`; the sole source of login credentials |
+| `config.json` | `server` ports/addresses, `ai` model settings, `limits` quotas and frequency |
+| `data/site.sqlite` | Profile, posts, categories, research, knowledge, images, sessions and usage |
+| `assets/demo/` | Initial demo images imported into SQLite; uploads go directly to SQLite |
 
-### Can I change the nav labels?
+To enable AI, add your key, set `ai.enabled` to `true`, and publish knowledge entries in the admin. Every question that passes input, rate and quota checks calls the model with recent conversation context. Knowledge entries provide facts, not preset replies. The model is instructed to refuse questions outside its role of introducing the site owner; refusals also count toward quotas. The deployer pays for model calls. Anonymous visitors are subject to browser identifier, IP and site-wide quotas.
 
-Edit the `<nav class="section-nav">` sections in the view files under `views/`.
+Restart after changing listening addresses or ports. Browser content changes apply immediately. Real `.env`, local `config.json` and `data/` are ignored by Git and Docker builds. Content exports exclude credentials, API keys, deployment settings and usage. Restoring replaces current content.
 
----
+To reset demo content, stop the app and run `npm run seed:demo`. This replaces content and images without making a backup.
 
-💡 **Having trouble?** [Open an issue](https://github.com/JiangYuxin-Jim/A-personal-website-template-based-on-Express/issues) — we're happy to help!
+## Publish your first blog post
+
+1. Open the admin address and sign in with the credentials from `.env`. The example defaults are `admin` / `admin`.
+2. Open Blog, enter a category name and click Add. Click Write an article in the upper-right corner to start a post.
+
+![Blog admin: categories, post status and the new article button](assets/readme/admin-posts.jpg)
+
+3. Enter a title, select one category, and write in the visual editor. The article URL is generated automatically. Tags are optional and can be entered freely, separated by commas or Enter.
+4. Click Insert image to choose a file, or paste or drag an image into the body. The editor displays it and creates its URL automatically. PNG/JPEG/WebP files up to 5MB are supported. Use Continue writing at the end to resume typing, or switch to Markdown mode if you prefer.
+
+![Visual editor with an inline image and publishing controls](assets/readme/admin-editor.jpg)
+
+*This screenshot shows an existing post. For a new post, the bottom-right action is Publish; for an already published post, it is Update publication.*
+
+5. Preview the body, save it as a private draft, or publish it. Click View published article to check the public page. Saving an already published post as a draft removes it from the public site after confirmation. Opening the editor or previewing a post does not change the published content.
+
+<details>
+<summary>Login screen and admin overview</summary>
+
+![Admin login](assets/readme/admin-login.jpg)
+
+![Admin overview](assets/readme/admin-overview.jpg)
+
+</details>
+
+## AI conversations and limits
+
+![MePage AI request flow](assets/readme/ai-flow.webp)
+
+The model receives relevant public profile data, published knowledge, visible research records and published posts, along with up to three recent conversation turns. Visitors can ask follow-up questions about a project without repeating the owner's name. The model is instructed to clarify ambiguous references and acknowledge missing information without inventing details. Knowledge entries do not contain preset replies.
+
+The assistant has rules for refusing unrelated tasks, prompt injection and requests for private information. Successful replies are labelled as AI generated. If AI is disabled, the provider fails, or the output fails a safety check, the interface displays a status notice.
+
+| `limits` setting | Default | Purpose |
+| --- | --- | --- |
+| `visitorDaily` | 10 | Daily requests per browser visitor |
+| `ipDaily` | 30 | Daily requests per IP |
+| `siteDaily` | 100 | Daily requests across the site |
+| `perMinute` | 5 | Requests per minute per visitor and IP |
+| `concurrent` | 2 | Site-wide concurrent model calls; one per visitor at a time |
+| `questionLength` | 500 | Characters per question |
+| `timezone` | `Asia/Shanghai` | Day boundary for daily quotas |
+
+Model refusals count toward quotas, as do requests sent to the provider that fail or time out. The server checks input, request frequency and quotas.
+
+## Docker (optional)
+
+Copy and edit the example configuration files first:
+
+```bash
+docker compose up -d --build
+# Stop: docker compose stop
+```
+
+If you change ports in `config.json`, update the Compose port mappings too. Data persists in a named volume; `.env` and `config.json` are mounted read-only. Compose sets container listening addresses to `0.0.0.0`.

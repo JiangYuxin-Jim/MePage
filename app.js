@@ -1,255 +1,98 @@
-const express = require('express');
-const path = require('path');
-const fs = require('fs');
-const matter = require('gray-matter');
-const { marked } = require('marked');
-const { markedHighlight } = require('marked-highlight');
-const hljs = require('highlight.js');
-
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// --- Load site configuration ---
-let siteConfig = {};
-try {
-  const siteRaw = fs.readFileSync(path.join(__dirname, 'content', 'site.json'), 'utf-8');
-  siteConfig = JSON.parse(siteRaw);
-} catch (e) {
-  console.warn('⚠️  content/site.json not found, using defaults.');
-  siteConfig = {
-    name: 'Your Name', nameEn: 'Your Name', initial: 'Y',
-    title: 'Your Title', titleEn: 'Your Title',
-    school: 'Your School', schoolEn: 'Your School',
-    email: 'your.email@example.com', github: 'yourusername',
-    researchInterests: [],
-    metaDescription: 'Personal academic homepage.'
+const fs = require("node:fs");
+const path = require("node:path");
+const { createConfig } = require("./src/config");
+const { createStore } = require("./src/store");
+const { createContent } = require("./src/content");
+const { createChat } = require("./src/chat");
+const { createPublicApp } = require("./src/public-app");
+const { createAdminApp } = require("./src/admin-app");
+const { token } = require("./src/security");
+const { acquireInstanceLock } = require("./src/instance-lock");
+const { createCredentials } = require("./src/credentials");
+function createRuntime(
+  root = path.resolve(process.env.SITE_ROOT || __dirname),
+) {
+  fs.mkdirSync(root, { recursive: true });
+  const store = createStore(path.join(root, "data")),
+    config = createConfig(root, store);
+  if (!store.meta("secret")) store.meta("secret", token());
+  const content = createContent(root, store, config);
+  const ctx = { root, config, store, content };
+  ctx.credentials = createCredentials(config);
+  ctx.chat = createChat(ctx);
+  ctx.publicApp = createPublicApp(ctx);
+  ctx.adminApp = createAdminApp(ctx);
+  return ctx;
+}
+async function start() {
+  const root = path.resolve(process.env.SITE_ROOT || __dirname);
+  fs.mkdirSync(path.join(root, "data"), { recursive: true, mode: 0o700 });
+  const releaseLock = acquireInstanceLock(root);
+  let ctx;
+  const servers = [];
+  let timer;
+  const cleanup = () => {
+    clearInterval(timer);
+    for (const s of servers) s.close();
+    ctx?.store.close();
+    releaseLock();
   };
-}
-
-// --- Configure marked with highlight.js + custom heading IDs ---
-marked.use({ headerIds: false, mangle: false });
-
-marked.use(
-  markedHighlight({
-    langPrefix: 'hljs language-',
-    highlight(code, lang) {
-      if (lang && hljs.getLanguage(lang)) {
-        return hljs.highlight(code, { language: lang }).value;
-      }
-      return hljs.highlightAuto(code).value;
-    },
-  })
-);
-
-// Custom heading renderer to add IDs matching TOC anchors
-marked.use({
-  extensions: [{
-    name: 'heading',
-    level: 'block',
-    renderer(token) {
-      const raw = token.text;
-      const anchor = raw.toLowerCase().replace(/[^\w一-鿿]+/g, '-').replace(/^-|-$/g, '');
-      return `<h${token.depth} id="${anchor}">${raw}</h${token.depth}>\n`;
-    }
-  }]
-});
-
-// --- View engine ---
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-
-// --- Static files ---
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'content')));
-
-// --- Blog helpers with simple in-memory cache ---
-let postsCache = null;
-let cacheTime = 0;
-const CACHE_TTL = 30 * 1000; // 30 seconds
-
-function getBlogPosts() {
-  const now = Date.now();
-  if (postsCache && (now - cacheTime) < CACHE_TTL) {
-    return postsCache;
+  try {
+    ctx = createRuntime(root);
+    await ctx.credentials.sync();
+    const cfg = ctx.config.get();
+    const overrides = Object.keys(ctx.config.deployment().overrides);
+    if (overrides.length)
+      console.log(`启动参数正在覆盖 config.json：${overrides.join("、")}`);
+    const port = Number(process.env.PORT || cfg.server.port),
+      adminPort = Number(process.env.ADMIN_PORT || cfg.server.adminPort);
+    if (
+      ![port, adminPort].every(
+        (p) => Number.isInteger(p) && p >= 1024 && p <= 65535,
+      ) ||
+      port === adminPort
+    )
+      throw new Error("前后台端口需为不同的 1024–65535 整数。");
+    for (const [app, p, host, label] of [
+      [ctx.publicApp, port, process.env.HOST || cfg.server.host, "前台"],
+      [
+        ctx.adminApp,
+        adminPort,
+        process.env.ADMIN_HOST || cfg.server.adminHost,
+        "管理端",
+      ],
+    ])
+      await new Promise((resolve, reject) => {
+        const s = app.listen(p, host, (error) => {
+          if (error) return reject(error);
+          console.log(
+            `${label}已启动：http://${host === "0.0.0.0" ? "localhost" : host}:${p}`,
+          );
+          resolve();
+        });
+        servers.push(s);
+        s.once("error", reject);
+      });
+    timer = setInterval(() => ctx.store.cleanup(), 3600000);
+    timer.unref();
+    ctx.store.cleanup();
+    for (const signal of ["SIGINT", "SIGTERM"])
+      process.once(signal, () => {
+        cleanup();
+        process.exit(0);
+      });
+  } catch (e) {
+    cleanup();
+    if (e.code === "EADDRINUSE")
+      throw new Error(
+        "端口被占用，请修改 config.json 中的 server.port / server.adminPort 后重试。",
+      );
+    throw e;
   }
-
-  const blogDir = path.join(__dirname, 'content', 'blog');
-  if (!fs.existsSync(blogDir)) {
-    postsCache = [];
-    cacheTime = now;
-    return postsCache;
-  }
-
-  const files = fs.readdirSync(blogDir).filter(f => f.endsWith('.md'));
-
-  const posts = files.map(file => {
-    const raw = fs.readFileSync(path.join(blogDir, file), 'utf-8');
-    const { data, content } = matter(raw);
-    const slug = file.replace(/\.md$/, '');
-
-    // Count words for reading time (Chinese: characters, English: words)
-    const text = content.replace(/[#*`\-\n\r\[\]()>|!]/g, ' ');
-    const wordCount = text.length;
-    const readTime = Math.max(1, Math.ceil(wordCount / 500));
-
-    // Extract h2 headings for TOC
-    const headings = [];
-    const headingRegex = /^##\s+(.+)$/gm;
-    let match;
-    while ((match = headingRegex.exec(content)) !== null) {
-      const title = match[1].trim();
-      const anchor = title
-        .toLowerCase()
-        .replace(/[^\w一-鿿]+/g, '-')
-        .replace(/^-|-$/g, '');
-      headings.push({ title, anchor });
-    }
-
-    return {
-      slug,
-      title: data.title || slug,
-      date: data.date ? new Date(data.date) : new Date(),
-      category: data.category || '未分类',
-      tags: data.tags || [],
-      excerpt: data.excerpt || content.replace(/[#*`\n\r]/g, ' ').slice(0, 150) + '...',
-      content,
-      headings,
-      readTime,
-    };
-  });
-
-  // Sort by date descending
-  posts.sort((a, b) => b.date - a.date);
-
-  postsCache = posts;
-  cacheTime = now;
-  return posts;
 }
-
-function getPostBySlug(slug) {
-  const posts = getBlogPosts();
-  return posts.find(p => p.slug === slug) || null;
-}
-
-// --- Categories — add new categories here (single source of truth) ---
-const CATEGORIES = ['技术文章', '项目实战', '教程笔记'];
-
-app.locals.getCategoryList = () => CATEGORIES;
-
-// --- Content loaders — reads markdown files from content/ directories ---
-function loadContentFile(filePath) {
-  if (!fs.existsSync(filePath)) return null;
-  const raw = fs.readFileSync(filePath, 'utf-8');
-  const { data, content } = matter(raw);
-  return { ...data, body: content.trim() };
-}
-
-function loadAbout() {
-  const file = loadContentFile(path.join(__dirname, 'content', 'about', 'about.md'));
-  if (!file) return { zh: '', en: '' };
-  return {
-    zh: (file.text_zh || '').replace(/\n/g, '\n'),
-    en: (file.text_en || '').replace(/\n/g, '\n'),
-  };
-}
-
-function loadPublications() {
-  const file = loadContentFile(path.join(__dirname, 'content', 'publications', 'list.md'));
-  if (!file || !file.items) return [];
-  return file.items.sort((a, b) => (b.year || '0').localeCompare(a.year || '0'));
-}
-
-function loadExperience() {
-  const file = loadContentFile(path.join(__dirname, 'content', 'experience', 'list.md'));
-  return file ? (file.items || []) : [];
-}
-
-// Make helpers available in templates
-app.locals.site = siteConfig;
-
-// ==========================================
-// Routes
-// ==========================================
-
-// Homepage — About
-app.get('/', (req, res) => {
-  const about = loadAbout();
-  res.render('index', {
-    title: siteConfig.name,
-    currentPage: 'home',
-    aboutZhHtml: marked.parse(about.zh),
-    aboutEnHtml: marked.parse(about.en),
+if (require.main === module)
+  start().catch((e) => {
+    console.error(`启动失败：${e.message}`);
+    process.exitCode = 1;
   });
-});
-
-// Publications page
-app.get('/publications', (req, res) => {
-  res.render('publications', {
-    title: 'Publications — ' + siteConfig.name,
-    currentPage: 'publications',
-    items: loadPublications(),
-  });
-});
-
-// Experience page
-app.get('/experience', (req, res) => {
-  res.render('experience', {
-    title: 'Experience — ' + siteConfig.name,
-    currentPage: 'experience',
-    items: loadExperience(),
-  });
-});
-
-// Blog list
-app.get('/blog', (req, res) => {
-  const posts = getBlogPosts();
-  res.render('blog-list', {
-    title: '博客',
-    currentPage: 'blog',
-    posts,
-    activeCategory: req.query.category || null,
-  });
-});
-
-// Blog post detail
-app.get('/blog/:slug', (req, res) => {
-  const post = getPostBySlug(req.params.slug);
-  if (!post) {
-    return res.status(404).render('404', {
-      title: '404 未找到',
-      currentPage: 'blog',
-    });
-  }
-
-  const posts = getBlogPosts();
-  const currentIndex = posts.findIndex(p => p.slug === req.params.slug);
-  const prevPost = currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null;
-  const nextPost = currentIndex > 0 ? posts[currentIndex - 1] : null;
-
-  // Render markdown to HTML
-  const bodyHtml = marked.parse(post.content);
-
-  res.render('blog-post', {
-    title: post.title,
-    currentPage: 'blog',
-    post,
-    bodyHtml,
-    prevPost,
-    nextPost,
-  });
-});
-
-// 404 catch-all
-app.use((req, res) => {
-  res.status(404).render('404', {
-    title: '404 未找到',
-    currentPage: 'home',
-  });
-});
-
-// ==========================================
-// Start server
-// ==========================================
-app.listen(PORT, () => {
-  console.log(`🚀 Blog server running at http://localhost:${PORT}`);
-});
+module.exports = { createRuntime, start };

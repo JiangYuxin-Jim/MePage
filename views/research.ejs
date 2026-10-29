@@ -1,0 +1,28 @@
+<%- include('partials/head', { title, currentPage }) %>
+<button class="lang-toggle" onclick="toggleLang()" aria-label="Switch language"><span class="zh">EN</span><span class="en">中</span></button>
+<div class="page-wrapper">
+  <%- include('partials/sidebar') %>
+  <main class="main-content" id="main-content">
+    <%- include('partials/nav', { currentPage }) %>
+    <section class="research-section">
+      <h2 class="section-title"><span class="zh">科研与经历</span><span class="en">Research &amp; Experience</span></h2>
+      <% const anchors = new Set(); %>
+      <div class="honor-list research-timeline">
+      <% items.forEach(function(item) { const first = !anchors.has(item.kind); anchors.add(item.kind); %>
+        <div class="honor-entry research-item" <% if (first) { %>id="<%= item.kind %>"<% } %>>
+          <div class="honor-entry-year research-year"><%= item.year || '—' %></div>
+          <div class="honor-entry-body research-body">
+            <div class="honor-entry-title"><% if (item.title) { %><%= item.title %><% } else { %><span class="zh"><%= item.title_zh || item.title_en %></span><span class="en"><%= item.title_en || item.title_zh %></span><% } %></div>
+            <% if (item.venue) { %><p class="research-venue"><%= item.venue %></p><% } else if (item.venue_zh || item.venue_en) { %><p class="research-venue"><span class="zh"><%= item.venue_zh || item.venue_en %></span><span class="en"><%= item.venue_en || item.venue_zh %></span></p><% } %>
+            <% if (item.desc_zh || item.desc_en) { %><p><span class="zh"><%= item.desc_zh || item.desc_en %></span><span class="en"><%= item.desc_en || item.desc_zh %></span></p><% } %>
+            <% if (item.summary_zh || item.summary_en) { %><p><span class="zh"><%= item.summary_zh || item.summary_en %></span><span class="en"><%= item.summary_en || item.summary_zh %></span></p><% } %>
+            <% if (item.doi) { %><a class="research-doi" href="<%= item.link || 'https://doi.org/' + item.doi %>" target="_blank" rel="noopener">DOI: <%= item.doi %></a><% } else if (item.link) { %><a href="<%= item.link %>" target="_blank" rel="noopener"><span class="zh">查看相关内容</span><span class="en">Read more</span></a><% } %>
+          </div>
+        </div>
+      <% }) %>
+      </div>
+      <% if (!items.length) { %><p class="content-empty"><span class="zh">相关记录正在整理中。</span><span class="en">More to come.</span></p><% } %>
+    </section>
+  </main>
+</div>
+<%- include('partials/scripts', { currentPage }) %>

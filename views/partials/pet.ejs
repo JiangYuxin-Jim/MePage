@@ -1,0 +1,13 @@
+<link rel="stylesheet" href="/pet/pet.css">
+<div id="site-pet" hidden>
+ <button id="pet-launch" class="pet-launch" aria-label="打开宠物聊天" aria-expanded="false" aria-controls="pet-panel"><span id="pet-portrait"></span><span id="pet-label"></span></button>
+ <section id="pet-panel" class="pet-panel" aria-labelledby="pet-heading" hidden>
+  <header><div><strong id="pet-heading"></strong><small>站长的 AI 小伙伴</small></div><button id="pet-close" aria-label="收起聊天">×</button></header>
+  <div id="pet-messages" class="pet-messages" role="log" aria-live="polite" aria-relevant="additions"></div>
+  <div id="pet-suggestions" class="pet-suggestions"></div>
+  <p class="pet-privacy">仅依据主人公开的资料回答。提问及必要上下文会发送给 DeepSeek。</p>
+  <form id="pet-form"><label class="pet-sr-only" for="pet-question">你想了解主人什么？</label><input id="pet-question" placeholder="想了解主人的什么呢？" autocomplete="off" required><button id="pet-send" type="submit" aria-label="发送问题">发送</button></form>
+  <div class="pet-foot"><span id="pet-quota"></span><button id="pet-hide">隐藏小伙伴</button></div>
+ </section>
+</div>
+<script src="/pet/pet.js" defer></script>
