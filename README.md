@@ -5,8 +5,7 @@
 装好 Node.js 24 LTS，下载项目，按下面的命令安装并启动，就能运行自己的个人网站。项目自带示例配置和演示内容，无需单独安装数据库，适合想搭建个人主页的学生、研究者和开发者。
 
 网站运行后，改简介、发文章、插图片和更新项目记录都在网页后台完成，日常维护不需要写代码。
-
-[GitHub 仓库](https://github.com/JiangYuxin-Jim/MePage) · [English](README_EN.md)
+[English](README_EN.md)
 
 ![MePage 个人主页预览](assets/readme/homepage.jpg)
 
