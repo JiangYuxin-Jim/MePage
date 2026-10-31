@@ -1,4 +1,5 @@
 # MePage
+[中文](README.md)
 
 **A minimal personal website with an optional AI assistant, easy to deploy and maintain.**
 
@@ -6,7 +7,7 @@ Install Node.js 24 LTS, download the project, and run the commands below. The pr
 
 Use it for your profile, portfolio, blog and research. After deployment, you can edit text, insert images and publish posts in the browser admin without writing code.
 
-[GitHub](https://github.com/JiangYuxin-Jim/MePage) · [中文](README.md)
+
 
 ![MePage public homepage](assets/readme/homepage.jpg)
 
